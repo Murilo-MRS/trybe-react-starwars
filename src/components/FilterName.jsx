@@ -4,7 +4,8 @@ import AppContext from '../context/AppContext';
 function FilterName() {
   const { name, handleName } = useContext(AppContext);
   return (
-    <label htmlFor="name">
+    <label htmlFor="name" data-testid="name-filter">
+      Paneta:
       <input
         type="text"
         name={ name }
