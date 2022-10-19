@@ -3,26 +3,12 @@ import PropTypes from 'prop-types';
 import AppContext from './AppContext';
 
 function Provider({ children }) {
-  // const [name, setName] = useState('');
-  // const [episode, setEpisode] = useState('maior que');
-  // const [quanty, setQuanty] = useState('');
-  // const [gender, setGender] = useState('');
+  const [name, setName] = useState('');
   const [data, setData] = useState([]);
-  // const handleName = ({ target }) => {
-  //   setName(target.value);
-  // };
 
-  // const handleQuanty = ({ target }) => {
-  //   setQuanty(target.value);
-  // };
-
-  // const handleGender = ({ target }) => {
-  //   setGender(target.value);
-  // };
-
-  // const handleEpisode = ({ target }) => {
-  //   setEpisode(target.value);
-  // };
+  const handleName = ({ target }) => {
+    setName(target.value);
+  };
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -37,7 +23,19 @@ function Provider({ children }) {
     requestAPI();
   }, []);
 
-  const contextValue = useMemo(() => ({ data }), [data]);
+  const contextValue = useMemo(
+    () => (
+      {
+        data,
+        name,
+        handleName,
+      }
+    ),
+    [
+      data, name,
+      setName,
+    ],
+  );
 
   // data,
   // name,
