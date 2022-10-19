@@ -33,7 +33,6 @@ function Provider({ children }) {
     ),
     [
       data, name,
-      setName,
     ],
   );
 
