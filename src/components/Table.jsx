@@ -4,22 +4,6 @@ import AppContext from '../context/AppContext';
 function Table() {
   const { data, name } = useContext(AppContext);
 
-  // const handleNumFilter = isFiltering
-  //   ? data?.filter((e) => {
-  //     const { value, column, comparison } = filterByColumn;
-  //     switch (comparison) {
-  //     case 'maior que':
-  //       return Number(e[column]) > Number(value);
-  //     case 'menor que':
-  //       return Number(e[column]) < Number(value);
-  //     case 'igual a':
-  //       return Number(e[column]) === Number(value);
-  //     default:
-  //       return data;
-  //     }
-  //   })
-  //   : data;
-
   return (
     <table>
       <thead>

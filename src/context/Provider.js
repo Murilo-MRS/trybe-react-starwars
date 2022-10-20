@@ -10,6 +10,13 @@ function Provider({ children }) {
   const [value, setValue] = useState('0');
   const [filterByColumn, setFilterByColumn] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
+  const [columnOptions, setColumnOptions] = useState([
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ]);
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -44,12 +51,26 @@ function Provider({ children }) {
     });
     setIsFiltering(false);
   };
-// ajuda do felipe pinto tribo 24A
+
+  // ajuda do felipe pinto tribo 24A
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const optionsFiltered = () => {
+    const selectedFilters = filterByColumn.map((e) => e.column);
+    const newOptions = columnOptions.filter((optionsColumn) => (
+      !selectedFilters.includes(optionsColumn) && optionsColumn
+    ));
+    setColumnOptions(newOptions);
+  };
+
+  useEffect(() => {
+    optionsFiltered();
+  }, [filterByColumn]);
+
   useEffect(() => {
     if (isFiltering) {
       multiFilter();
     }
-  }, [data, multiFilter, isFiltering]);
+  }, [isFiltering, multiFilter]);
 
   const handleName = ({ target }) => {
     setName(target.value);
@@ -87,6 +108,7 @@ function Provider({ children }) {
         handleFilterButton,
         filterByColumn,
         isFiltering,
+        columnOptions,
       }
     ),
     [
@@ -97,6 +119,7 @@ function Provider({ children }) {
       value,
       filterByColumn,
       isFiltering,
+      columnOptions,
     ],
   );
 

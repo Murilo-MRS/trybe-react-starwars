@@ -10,6 +10,7 @@ function NumericFilters() {
     value,
     handleValue,
     handleFilterButton,
+    columnOptions,
   } = useContext(AppContext);
 
   return (
@@ -23,11 +24,13 @@ function NumericFilters() {
           onChange={ handleColumn }
           data-testid="column-filter"
         >
-          <option value="population">population</option>
-          <option value="orbital_period">orbital_period</option>
-          <option value="diameter">diameter</option>
-          <option value="rotation_period">rotation_period</option>
-          <option value="surface_water">surface_water</option>
+          {
+            columnOptions.map((e, index) => (
+              <option key={ index } value={ e }>
+                {e}
+              </option>
+            ))
+          }
         </select>
       </label>
       <label htmlFor="comparison">
