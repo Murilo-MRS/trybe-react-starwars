@@ -3,11 +3,33 @@ import PropTypes from 'prop-types';
 import AppContext from './AppContext';
 
 function Provider({ children }) {
-  const [name, setName] = useState('');
   const [data, setData] = useState([]);
+  const [name, setName] = useState('');
+  const [column, setColumn] = useState('population');
+  const [comparison, setComparison] = useState('maior que');
+  const [value, setValue] = useState('0');
+  const [filterByColumn, setFilterByColumn] = useState({});
+  const [filterNumerics, setFilterNumerics] = useState(false);
 
   const handleName = ({ target }) => {
     setName(target.value);
+  };
+
+  const handleColumn = ({ target }) => {
+    setColumn(target.value);
+  };
+
+  const handleComparison = ({ target }) => {
+    setComparison(target.value);
+  };
+
+  const handleValue = ({ target }) => {
+    setValue(target.value);
+  };
+
+  const handleFilterButton = (obj) => {
+    setFilterByColumn(obj);
+    setFilterNumerics(true);
   };
 
   useEffect(() => {
@@ -15,7 +37,11 @@ function Provider({ children }) {
       try {
         const response = await fetch('https://swapi.dev/api/planets');
         const dataApi = await response.json();
-        setData(dataApi);
+        const dataResults = dataApi.results.map((element) => {
+          delete (element.residents);
+          return element;
+        });
+        setData(dataResults);
       } catch (e) {
         throw new Error(e.message);
       }
@@ -29,22 +55,27 @@ function Provider({ children }) {
         data,
         name,
         handleName,
+        column,
+        handleColumn,
+        comparison,
+        handleComparison,
+        value,
+        handleValue,
+        handleFilterButton,
+        filterByColumn,
+        filterNumerics,
       }
     ),
     [
-      data, name,
+      data,
+      name,
+      column,
+      comparison,
+      value,
+      filterByColumn,
+      filterNumerics,
     ],
   );
-
-  // data,
-  // name,
-  // gender,
-  // episode,
-  // handleEpisode,
-  // handleGender,
-  // handleName,
-  // quanty,
-  // handleQuanty
 
   return (
     <AppContext.Provider value={ contextValue }>

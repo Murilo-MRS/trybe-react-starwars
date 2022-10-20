@@ -2,8 +2,22 @@ import React, { useContext } from 'react';
 import AppContext from '../context/AppContext';
 
 function Table() {
-  const { data, name } = useContext(AppContext);
-  const { results } = data;
+  const { data, name, filterByColumn, filterNumerics } = useContext(AppContext);
+  const handleNumFilter = filterNumerics
+    ? data?.filter((e) => {
+      const { value, column, comparison } = filterByColumn;
+      switch (comparison) {
+      case 'maior que':
+        return Number(e[column]) > Number(value);
+      case 'menor que':
+        return Number(e[column]) < Number(value);
+      case 'igual a':
+        return Number(e[column]) === Number(value);
+      default:
+        return data;
+      }
+    })
+    : data;
 
   return (
     <table>
@@ -26,22 +40,13 @@ function Table() {
       </thead>
       <tbody>
         {
-          results?.filter((e) => (e.name.toLowerCase().includes(name.toLowerCase())))
+          handleNumFilter
+            ?.filter((e) => e.name.toLowerCase().includes(name.toLowerCase()))
             .map((e) => (
               <tr key={ e.name }>
-                <td>{e.name}</td>
-                <td>{e.rotation_period}</td>
-                <td>{e.orbital_period}</td>
-                <td>{e.diameter}</td>
-                <td>{e.climate}</td>
-                <td>{e.gravity}</td>
-                <td>{e.terrain}</td>
-                <td>{e.surface_water}</td>
-                <td>{e.population}</td>
-                <td>{e.films}</td>
-                <td>{e.created}</td>
-                <td>{e.edited}</td>
-                <td>{e.url}</td>
+                {Object.values(e).map((element, index) => (
+                  <td key={ index }>{element}</td>
+                ))}
               </tr>
             ))
         }
