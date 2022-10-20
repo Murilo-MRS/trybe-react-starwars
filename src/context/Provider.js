@@ -8,29 +8,8 @@ function Provider({ children }) {
   const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [value, setValue] = useState('0');
-  const [filterByColumn, setFilterByColumn] = useState({});
-  const [filterNumerics, setFilterNumerics] = useState(false);
-
-  const handleName = ({ target }) => {
-    setName(target.value);
-  };
-
-  const handleColumn = ({ target }) => {
-    setColumn(target.value);
-  };
-
-  const handleComparison = ({ target }) => {
-    setComparison(target.value);
-  };
-
-  const handleValue = ({ target }) => {
-    setValue(target.value);
-  };
-
-  const handleFilterButton = (obj) => {
-    setFilterByColumn(obj);
-    setFilterNumerics(true);
-  };
+  const [filterByColumn, setFilterByColumn] = useState([]);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -49,6 +28,50 @@ function Provider({ children }) {
     requestAPI();
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const multiFilter = () => {
+    filterByColumn.forEach((e) => {
+      switch (e.comparison) {
+      case 'maior que':
+        return setData(data?.filter((el) => Number(el[e.column]) > Number(e.value)));
+      case 'menor que':
+        return setData(data?.filter((el) => Number(el[e.column]) < Number(e.value)));
+      case 'igual a':
+        return setData(data?.filter((el) => Number(el[e.column]) === Number(e.value)));
+      default:
+        return data;
+      }
+    });
+    setIsFiltering(false);
+  };
+// ajuda do felipe pinto tribo 24A
+  useEffect(() => {
+    if (isFiltering) {
+      multiFilter();
+    }
+  }, [data, multiFilter, isFiltering]);
+
+  const handleName = ({ target }) => {
+    setName(target.value);
+  };
+
+  const handleColumn = ({ target }) => {
+    setColumn(target.value);
+  };
+
+  const handleComparison = ({ target }) => {
+    setComparison(target.value);
+  };
+
+  const handleValue = ({ target }) => {
+    setValue(target.value);
+  };
+
+  const handleFilterButton = (obj) => {
+    setFilterByColumn((state) => [...state, obj]);
+    setIsFiltering(true);
+  };
+
   const contextValue = useMemo(
     () => (
       {
@@ -63,7 +86,7 @@ function Provider({ children }) {
         handleValue,
         handleFilterButton,
         filterByColumn,
-        filterNumerics,
+        isFiltering,
       }
     ),
     [
@@ -73,7 +96,7 @@ function Provider({ children }) {
       comparison,
       value,
       filterByColumn,
-      filterNumerics,
+      isFiltering,
     ],
   );
 

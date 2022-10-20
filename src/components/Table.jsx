@@ -2,22 +2,23 @@ import React, { useContext } from 'react';
 import AppContext from '../context/AppContext';
 
 function Table() {
-  const { data, name, filterByColumn, filterNumerics } = useContext(AppContext);
-  const handleNumFilter = filterNumerics
-    ? data?.filter((e) => {
-      const { value, column, comparison } = filterByColumn;
-      switch (comparison) {
-      case 'maior que':
-        return Number(e[column]) > Number(value);
-      case 'menor que':
-        return Number(e[column]) < Number(value);
-      case 'igual a':
-        return Number(e[column]) === Number(value);
-      default:
-        return data;
-      }
-    })
-    : data;
+  const { data, name } = useContext(AppContext);
+
+  // const handleNumFilter = isFiltering
+  //   ? data?.filter((e) => {
+  //     const { value, column, comparison } = filterByColumn;
+  //     switch (comparison) {
+  //     case 'maior que':
+  //       return Number(e[column]) > Number(value);
+  //     case 'menor que':
+  //       return Number(e[column]) < Number(value);
+  //     case 'igual a':
+  //       return Number(e[column]) === Number(value);
+  //     default:
+  //       return data;
+  //     }
+  //   })
+  //   : data;
 
   return (
     <table>
@@ -40,7 +41,7 @@ function Table() {
       </thead>
       <tbody>
         {
-          handleNumFilter
+          data
             ?.filter((e) => e.name.toLowerCase().includes(name.toLowerCase()))
             .map((e) => (
               <tr key={ e.name }>
