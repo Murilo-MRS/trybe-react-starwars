@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import AppContext from './AppContext';
 
@@ -35,8 +35,7 @@ function Provider({ children }) {
     requestAPI();
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const multiFilter = () => {
+  const multiFilter = useCallback(() => {
     filterByColumn.forEach((e) => {
       switch (e.comparison) {
       case 'maior que':
@@ -50,27 +49,27 @@ function Provider({ children }) {
       }
     });
     setIsFiltering(false);
-  };
+  }, [data, filterByColumn]);
 
   // ajuda do felipe pinto tribo 24A
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const optionsFiltered = () => {
+  const optionsFiltered = useCallback(() => {
     const selectedFilters = filterByColumn.map((e) => e.column);
     const newOptions = columnOptions.filter((optionsColumn) => (
       !selectedFilters.includes(optionsColumn) && optionsColumn
     ));
     setColumnOptions(newOptions);
-  };
+  }, [filterByColumn, columnOptions]);
 
   useEffect(() => {
     optionsFiltered();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterByColumn]);
 
   useEffect(() => {
     if (isFiltering) {
       multiFilter();
     }
-  }, [isFiltering, multiFilter]);
+  }, [data, isFiltering, multiFilter]);
 
   const handleName = ({ target }) => {
     setName(target.value);
@@ -98,17 +97,17 @@ function Provider({ children }) {
       {
         data,
         name,
-        handleName,
         column,
-        handleColumn,
         comparison,
-        handleComparison,
         value,
-        handleValue,
-        handleFilterButton,
         filterByColumn,
         isFiltering,
         columnOptions,
+        handleName,
+        handleColumn,
+        handleComparison,
+        handleValue,
+        handleFilterButton,
       }
     ),
     [
