@@ -2,17 +2,20 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import AppContext from './AppContext';
 
+const arrOfOptions = [
+  'population',
+  'orbital_period',
+  'diameter',
+  'rotation_period',
+  'surface_water',
+];
+
 function Provider({ children }) {
   const [data, setData] = useState([]);
+  const [planetList, setPlanetList] = useState([]);
   const [name, setName] = useState('');
-  const [columnOptions, setColumnOptions] = useState([
-    'population',
-    'orbital_period',
-    'diameter',
-    'rotation_period',
-    'surface_water',
-  ]);
-  const [column, setColumn] = useState('population');
+  const [columnOptions, setColumnOptions] = useState(arrOfOptions);
+  const [column, setColumn] = useState(columnOptions[0]);
   const [comparison, setComparison] = useState('maior que');
   const [value, setValue] = useState('0');
   const [filterByColumn, setFilterByColumn] = useState([]);
@@ -28,6 +31,7 @@ function Provider({ children }) {
           return element;
         });
         setData(dataResults);
+        setPlanetList(dataResults);
       } catch (e) {
         throw new Error(e.message);
       }
@@ -35,21 +39,32 @@ function Provider({ children }) {
     requestAPI();
   }, []);
 
-  const multiFilter = useCallback(() => {
-    filterByColumn.forEach((e) => {
-      switch (e.comparison) {
-      case 'maior que':
-        return setData(data?.filter((el) => Number(el[e.column]) > Number(e.value)));
-      case 'menor que':
-        return setData(data?.filter((el) => Number(el[e.column]) < Number(e.value)));
-      case 'igual a':
-        return setData(data?.filter((el) => Number(el[e.column]) === Number(e.value)));
-      default:
-        return data;
-      }
-    });
-    setIsFiltering(false);
-  }, [data, filterByColumn]);
+  // const multiFilter = useCallback(() => {
+  //   filterByColumn.forEach((e) => {
+  //     setColumn(e.column)
+
+  // switch (e.comparison) {
+  // case 'maior que':
+  //   return setPlanetList(data
+  //     ?.filter((el) => Number(el[e.column]) > Number(e.value)));
+  // case 'menor que':
+  //   return setPlanetList(data
+  //     ?.filter((el) => Number(el[e.column]) < Number(e.value)));
+  // case 'igual a':
+  //   return setPlanetList(data
+  //     ?.filter((el) => Number(el[e.column]) === Number(e.value)));
+  // default:
+  //   return data;
+  // }
+  //   });
+  //   setIsFiltering(false);
+  // }, [data, filterByColumn, column, comparison, value]);
+
+  // useEffect(() => {
+  //   if (isFiltering) {
+  //     multiFilter();
+  //   }
+  // }, [data, isFiltering, multiFilter]);
 
   // ajuda do felipe pinto tribo 24A
   const optionsFiltered = useCallback(() => {
@@ -58,7 +73,7 @@ function Provider({ children }) {
       !selectedFilters.includes(optionsColumn) && optionsColumn
     ));
     setColumnOptions(newOptions);
-    setColumn(columnOptions[0]);
+    setColumn(newOptions[0]);
   }, [filterByColumn, columnOptions]);
 
   useEffect(() => {
@@ -66,11 +81,30 @@ function Provider({ children }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterByColumn]);
 
-  useEffect(() => {
-    if (isFiltering) {
-      multiFilter();
+  const handleRemoveAll = useCallback(() => {
+    setColumnOptions(arrOfOptions);
+    setFilterByColumn([]);
+    setPlanetList(data);
+  }, [data]);
+
+  const handleRemoveClicked = useCallback((selected) => {
+    if (filterByColumn.length >= 2) {
+      const removedSelectedFilter = filterByColumn.filter((e) => (
+        e.column !== selected
+      ));
+      const xablau = filterByColumn[filterByColumn.length - 2];
+      console.log(xablau);
+      setPlanetList(filterByColumn[filterByColumn.length - 2].array);
+      setColumnOptions([...columnOptions, selected]);
+      setFilterByColumn(removedSelectedFilter);
+      setIsFiltering(true);
     }
-  }, [data, isFiltering, multiFilter]);
+    if (filterByColumn.length === 1) {
+      setColumnOptions(arrOfOptions);
+      setFilterByColumn([]);
+      setPlanetList(data);
+    }
+  }, [filterByColumn]);
 
   const handleName = ({ target }) => {
     setName(target.value);
@@ -90,13 +124,32 @@ function Provider({ children }) {
 
   const handleFilterButton = (obj) => {
     setFilterByColumn((state) => [...state, obj]);
-    setIsFiltering(true);
+    if (comparison === 'maior que') {
+      const filter = data?.filter((el) => Number(el[column]) > Number(value));
+      setPlanetList(filter);
+      setFilterByColumn([...filterByColumn,
+        { column, comparison, value, array: filter }]);
+    }
+    if (comparison === 'menor que') {
+      const filter = data?.filter((el) => Number(el[column]) < Number(value));
+      setPlanetList(filter);
+      setFilterByColumn([...filterByColumn,
+        { column, comparison, value, array: filter }]);
+    }
+    if (comparison === 'igual a') {
+      const filter = data?.filter((el) => Number(el[column]) === Number(value));
+      setPlanetList(filter);
+      setFilterByColumn([...filterByColumn,
+        { column, comparison, value, array: filter }]);
+    }
+    // setIsFiltering(true);
   };
 
   const contextValue = useMemo(
     () => (
       {
         data,
+        planetList,
         name,
         column,
         comparison,
@@ -104,15 +157,19 @@ function Provider({ children }) {
         filterByColumn,
         isFiltering,
         columnOptions,
+        arrOfOptions,
         handleName,
         handleColumn,
         handleComparison,
         handleValue,
         handleFilterButton,
+        handleRemoveClicked,
+        handleRemoveAll,
       }
     ),
     [
       data,
+      planetList,
       name,
       column,
       comparison,
@@ -120,6 +177,9 @@ function Provider({ children }) {
       filterByColumn,
       isFiltering,
       columnOptions,
+      arrOfOptions,
+      handleRemoveClicked,
+      handleRemoveAll,
     ],
   );
 

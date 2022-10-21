@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import AppContext from '../context/AppContext';
 
 function Table() {
-  const { data, name } = useContext(AppContext);
+  const { planetList, name } = useContext(AppContext);
 
   return (
     <table>
@@ -25,7 +25,7 @@ function Table() {
       </thead>
       <tbody>
         {
-          data
+          planetList
             ?.filter((e) => e.name.toLowerCase().includes(name.toLowerCase()))
             .map((e) => (
               <tr key={ e.name }>
