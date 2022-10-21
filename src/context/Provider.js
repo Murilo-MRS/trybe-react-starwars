@@ -5,11 +5,6 @@ import AppContext from './AppContext';
 function Provider({ children }) {
   const [data, setData] = useState([]);
   const [name, setName] = useState('');
-  const [column, setColumn] = useState('population');
-  const [comparison, setComparison] = useState('maior que');
-  const [value, setValue] = useState('0');
-  const [filterByColumn, setFilterByColumn] = useState([]);
-  const [isFiltering, setIsFiltering] = useState(false);
   const [columnOptions, setColumnOptions] = useState([
     'population',
     'orbital_period',
@@ -17,6 +12,11 @@ function Provider({ children }) {
     'rotation_period',
     'surface_water',
   ]);
+  const [column, setColumn] = useState('population');
+  const [comparison, setComparison] = useState('maior que');
+  const [value, setValue] = useState('0');
+  const [filterByColumn, setFilterByColumn] = useState([]);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -58,6 +58,7 @@ function Provider({ children }) {
       !selectedFilters.includes(optionsColumn) && optionsColumn
     ));
     setColumnOptions(newOptions);
+    setColumn(columnOptions[0]);
   }, [filterByColumn, columnOptions]);
 
   useEffect(() => {
