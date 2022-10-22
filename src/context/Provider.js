@@ -39,32 +39,31 @@ function Provider({ children }) {
     requestAPI();
   }, []);
 
-  // const multiFilter = useCallback(() => {
-  //   filterByColumn.forEach((e) => {
-  //     setColumn(e.column)
+  const multiFilter = useCallback(() => {
+    filterByColumn.forEach((e) => {
+      // setColumn(e.column);
+      switch (e.comparison) {
+      case 'maior que':
+        return setPlanetList(planetList
+          ?.filter((el) => Number(el[e.column]) > Number(e.value)));
+      case 'menor que':
+        return setPlanetList(planetList
+          ?.filter((el) => Number(el[e.column]) < Number(e.value)));
+      case 'igual a':
+        return setPlanetList(planetList
+          ?.filter((el) => Number(el[e.column]) === Number(e.value)));
+      default:
+        return data;
+      }
+    });
+    setIsFiltering(false);
+  }, [data, filterByColumn, planetList]);
 
-  // switch (e.comparison) {
-  // case 'maior que':
-  //   return setPlanetList(data
-  //     ?.filter((el) => Number(el[e.column]) > Number(e.value)));
-  // case 'menor que':
-  //   return setPlanetList(data
-  //     ?.filter((el) => Number(el[e.column]) < Number(e.value)));
-  // case 'igual a':
-  //   return setPlanetList(data
-  //     ?.filter((el) => Number(el[e.column]) === Number(e.value)));
-  // default:
-  //   return data;
-  // }
-  //   });
-  //   setIsFiltering(false);
-  // }, [data, filterByColumn, column, comparison, value]);
-
-  // useEffect(() => {
-  //   if (isFiltering) {
-  //     multiFilter();
-  //   }
-  // }, [data, isFiltering, multiFilter]);
+  useEffect(() => {
+    if (isFiltering) {
+      multiFilter();
+    }
+  }, [data, isFiltering, multiFilter]);
 
   // ajuda do felipe pinto tribo 24A
   const optionsFiltered = useCallback(() => {
@@ -92,11 +91,12 @@ function Provider({ children }) {
       const removedSelectedFilter = filterByColumn.filter((e) => (
         e.column !== selected
       ));
-      const xablau = filterByColumn[filterByColumn.length - 2];
-      console.log(xablau);
-      setPlanetList(filterByColumn[filterByColumn.length - 2].array);
+      // const xablau = filterByColumn[filterByColumn.length - 2];
+      // console.log(xablau);
+      // setPlanetList(filterByColumn[filterByColumn.length - 2].array);
       setColumnOptions([...columnOptions, selected]);
       setFilterByColumn(removedSelectedFilter);
+      setPlanetList(data);
       setIsFiltering(true);
     }
     if (filterByColumn.length === 1) {
@@ -104,7 +104,7 @@ function Provider({ children }) {
       setFilterByColumn([]);
       setPlanetList(data);
     }
-  }, [filterByColumn]);
+  }, [filterByColumn, columnOptions, data]);
 
   const handleName = ({ target }) => {
     setName(target.value);
@@ -124,25 +124,25 @@ function Provider({ children }) {
 
   const handleFilterButton = (obj) => {
     setFilterByColumn((state) => [...state, obj]);
-    if (comparison === 'maior que') {
-      const filter = data?.filter((el) => Number(el[column]) > Number(value));
-      setPlanetList(filter);
-      setFilterByColumn([...filterByColumn,
-        { column, comparison, value, array: filter }]);
-    }
-    if (comparison === 'menor que') {
-      const filter = data?.filter((el) => Number(el[column]) < Number(value));
-      setPlanetList(filter);
-      setFilterByColumn([...filterByColumn,
-        { column, comparison, value, array: filter }]);
-    }
-    if (comparison === 'igual a') {
-      const filter = data?.filter((el) => Number(el[column]) === Number(value));
-      setPlanetList(filter);
-      setFilterByColumn([...filterByColumn,
-        { column, comparison, value, array: filter }]);
-    }
-    // setIsFiltering(true);
+    // if (comparison === 'maior que') {
+    //   const filter = data?.filter((el) => Number(el[column]) > Number(value));
+    //   setPlanetList(filter);
+    //   setFilterByColumn([...filterByColumn,
+    //     { column, comparison, value, array: filter }]);
+    // }
+    // if (comparison === 'menor que') {
+    //   const filter = data?.filter((el) => Number(el[column]) < Number(value));
+    //   setPlanetList(filter);
+    //   setFilterByColumn([...filterByColumn,
+    //     { column, comparison, value, array: filter }]);
+    // }
+    // if (comparison === 'igual a') {
+    //   const filter = data?.filter((el) => Number(el[column]) === Number(value));
+    //   setPlanetList(filter);
+    //   setFilterByColumn([...filterByColumn,
+    //     { column, comparison, value, array: filter }]);
+    // }
+    setIsFiltering(true);
   };
 
   const contextValue = useMemo(
@@ -157,7 +157,6 @@ function Provider({ children }) {
         filterByColumn,
         isFiltering,
         columnOptions,
-        arrOfOptions,
         handleName,
         handleColumn,
         handleComparison,
@@ -177,7 +176,6 @@ function Provider({ children }) {
       filterByColumn,
       isFiltering,
       columnOptions,
-      arrOfOptions,
       handleRemoveClicked,
       handleRemoveAll,
     ],

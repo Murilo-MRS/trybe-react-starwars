@@ -7,21 +7,21 @@ function SelectedFilters() {
     <section>
       {
         filterByColumn.map((e) => (
-          <button
-            key={ e.column }
-            type="button"
-            data-testid="filter"
-            onClick={ () => handleRemoveClicked(e.column) }
-          >
-            {`${e.column} | ${e.comparison} | ${e.value}`}
-            {' '}
-            <img src="https://img.icons8.com/color/18/000000/delete-forever.png" alt="delete" />
-          </button>
+          <div key={ e.column } data-testid="filter">
+            <span>{`${e.column} | ${e.comparison} | ${e.value}`}</span>
+            <button
+              type="button"
+              onClick={ () => handleRemoveClicked(e.column) }
+            >
+              <img src="https://img.icons8.com/color/18/000000/delete-forever.png" alt="delete" />
+            </button>
+          </div>
         ))
       }
       <button
         type="button"
         onClick={ () => handleRemoveAll() }
+        data-testid="button-remove-filters"
       >
         Remover Filtros
       </button>

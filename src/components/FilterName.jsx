@@ -5,7 +5,7 @@ function FilterName() {
   const { name, handleName } = useContext(AppContext);
   return (
     <label htmlFor="name" data-testid="name-filter">
-      Paneta:
+      Planeta:
       <input
         type="text"
         name={ name }
