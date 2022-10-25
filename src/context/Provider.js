@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import AppContext from './AppContext';
 
-const arrOfOptions = [
+export const arrOfOptions = [
   'population',
   'orbital_period',
   'diameter',
@@ -20,6 +20,10 @@ function Provider({ children }) {
   const [value, setValue] = useState('0');
   const [filterByColumn, setFilterByColumn] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
+  const [columnToOrder, setColumnToOrder] = useState('population');
+  const [orderValue, setOrderValue] = useState('ASC');
+  const [sortFilters, setSortFilters] = useState({});
+  const [isOrdering, setIsOrdering] = useState(false);
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -41,7 +45,6 @@ function Provider({ children }) {
 
   const multiFilter = useCallback(() => {
     filterByColumn.forEach((e) => {
-      // setColumn(e.column);
       switch (e.comparison) {
       case 'maior que':
         return setPlanetList(planetList
@@ -63,8 +66,37 @@ function Provider({ children }) {
     if (isFiltering) {
       multiFilter();
     }
-  }, [data, isFiltering, multiFilter]);
+  }, [planetList, isFiltering, multiFilter]);
 
+  const orderTable = useCallback(() => {
+    const { column: columnTosort, sort } = sortFilters;
+    const arrayWithUnknown = planetList.filter((e) => e[columnTosort] === 'unknown');
+    const arrayWithKnown = planetList.filter((e) => e[columnTosort] !== 'unknown');
+    if (sort === 'ASC') {
+      const sortPlanetList = arrayWithKnown
+        .sort(({ [columnTosort]: a }, { [columnTosort]: b }) => (
+          b - a
+        ))
+        .sort(({ [columnTosort]: a }, { [columnTosort]: b }) => (
+          a - b
+        ));
+      setPlanetList([...sortPlanetList, ...arrayWithUnknown]);
+    }
+    if (sort === 'DESC') {
+      const sortPlanetList = arrayWithKnown
+        .sort(({ [columnTosort]: a }, { [columnTosort]: b }) => (
+          b - a
+        ));
+      setPlanetList([...sortPlanetList, ...arrayWithUnknown]);
+    }
+  }, [sortFilters, planetList]);
+
+  useEffect(() => {
+    if (isOrdering) {
+      orderTable();
+      setIsOrdering(false);
+    }
+  }, [isOrdering, orderTable, planetList]);
   // ajuda do felipe pinto tribo 24A
   const optionsFiltered = useCallback(() => {
     const selectedFilters = filterByColumn.map((e) => e.column);
@@ -91,9 +123,6 @@ function Provider({ children }) {
       const removedSelectedFilter = filterByColumn.filter((e) => (
         e.column !== selected
       ));
-      // const xablau = filterByColumn[filterByColumn.length - 2];
-      // console.log(xablau);
-      // setPlanetList(filterByColumn[filterByColumn.length - 2].array);
       setColumnOptions([...columnOptions, selected]);
       setFilterByColumn(removedSelectedFilter);
       setPlanetList(data);
@@ -122,27 +151,22 @@ function Provider({ children }) {
     setValue(target.value);
   };
 
+  const handleColumnSort = ({ target }) => {
+    setColumnToOrder(target.value);
+  };
+
+  const handleRadioInput = ({ target }) => {
+    setOrderValue(target.value);
+  };
+
   const handleFilterButton = (obj) => {
     setFilterByColumn((state) => [...state, obj]);
-    // if (comparison === 'maior que') {
-    //   const filter = data?.filter((el) => Number(el[column]) > Number(value));
-    //   setPlanetList(filter);
-    //   setFilterByColumn([...filterByColumn,
-    //     { column, comparison, value, array: filter }]);
-    // }
-    // if (comparison === 'menor que') {
-    //   const filter = data?.filter((el) => Number(el[column]) < Number(value));
-    //   setPlanetList(filter);
-    //   setFilterByColumn([...filterByColumn,
-    //     { column, comparison, value, array: filter }]);
-    // }
-    // if (comparison === 'igual a') {
-    //   const filter = data?.filter((el) => Number(el[column]) === Number(value));
-    //   setPlanetList(filter);
-    //   setFilterByColumn([...filterByColumn,
-    //     { column, comparison, value, array: filter }]);
-    // }
     setIsFiltering(true);
+  };
+
+  const handleClickToOrder = (col, orderType) => {
+    setSortFilters({ column: col, sort: orderType });
+    setIsOrdering(true);
   };
 
   const contextValue = useMemo(
@@ -164,6 +188,11 @@ function Provider({ children }) {
         handleFilterButton,
         handleRemoveClicked,
         handleRemoveAll,
+        columnToOrder,
+        handleColumnSort,
+        orderValue,
+        handleRadioInput,
+        handleClickToOrder,
       }
     ),
     [
@@ -178,6 +207,8 @@ function Provider({ children }) {
       columnOptions,
       handleRemoveClicked,
       handleRemoveAll,
+      columnToOrder,
+      orderValue,
     ],
   );
 

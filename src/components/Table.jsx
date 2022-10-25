@@ -30,7 +30,9 @@ function Table() {
             .map((e) => (
               <tr key={ e.name }>
                 {Object.values(e).map((element, index) => (
-                  <td key={ index }>{element}</td>
+                  (index === 0)
+                    ? <td key={ index } data-testid="planet-name">{element}</td>
+                    : <td key={ index }>{element}</td>
                 ))}
               </tr>
             ))
