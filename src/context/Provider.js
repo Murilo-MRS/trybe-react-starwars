@@ -27,18 +27,18 @@ function Provider({ children }) {
 
   useEffect(() => {
     const requestAPI = async () => {
-      try {
-        const response = await fetch('https://swapi.dev/api/planets');
-        const dataApi = await response.json();
-        const dataResults = dataApi.results.map((element) => {
-          delete (element.residents);
-          return element;
-        });
-        setData(dataResults);
-        setPlanetList(dataResults);
-      } catch (e) {
-        throw new Error(e.message);
-      }
+      // try {
+      const response = await fetch('https://swapi.dev/api/planets');
+      const dataApi = await response.json();
+      const dataResults = dataApi.results.map((element) => {
+        delete (element.residents);
+        return element;
+      });
+      setData(dataResults);
+      setPlanetList(dataResults);
+      // } catch (e) {
+      //   throw new Error(e.message);
+      // }
     };
     requestAPI();
   }, []);

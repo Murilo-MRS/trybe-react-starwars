@@ -6,14 +6,14 @@ function SelectedFilters() {
   return (
     <section>
       {
-        filterByColumn.map((e) => (
+        filterByColumn.map((e, index) => (
           <div key={ e.column } data-testid="filter">
             <span>{`${e.column} | ${e.comparison} | ${e.value}`}</span>
             <button
               type="button"
               onClick={ () => handleRemoveClicked(e.column) }
             >
-              <img src="https://img.icons8.com/color/18/000000/delete-forever.png" alt="delete" />
+              <img src="https://img.icons8.com/color/18/000000/delete-forever.png" alt={ `delete${index}` } />
             </button>
           </div>
         ))
