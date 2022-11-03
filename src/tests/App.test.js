@@ -41,7 +41,7 @@ describe('Teste da aplicacão', () => {
     userEvent.click(btnRemoveAll);
   });
   
-  test('Teste se API é chamada', () => {
+  test('Teste se API é chamada', async () => {
     render(<App />);
     expect(fetch).toHaveBeenCalled();
   });
